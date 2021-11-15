@@ -13,10 +13,10 @@ from random import randint
 
 row = 6
 column = 7
-gamma = 0.9#this is the discount
-yellow = 1
-red = -1
-
+#gamma = 0.9#this is the discount
+#yellow = 1
+#red = -1
+#board spaces are 0: empty, 1:yellow player, 2: red player
 def main():
     print("Hello")
     test = ConnectFour(1,2)
