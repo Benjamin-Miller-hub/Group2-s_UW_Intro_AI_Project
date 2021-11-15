@@ -23,6 +23,7 @@ def main():
     #print(test.observation_space.sample())
     print(test.observation_space)
     state,reward,done,info = test.step(3)
+    new_format = test.change_format_for_neuralNet()
     state,reward,done,info = test.step(3)
     state,reward,done,info = test.step(3)
     state,reward,done,info = test.step(3)
@@ -402,7 +403,14 @@ class ConnectFour(Env):
 
        return self.state
     
-
+    def change_format_for_neuralNet(self):
+       state_in_array_format = np.zeros((6,7))
+       #iterate through the state of the board and return it as a 6x7 for the neural net
+       for i in range(6):
+           for j in range(7):
+               state_array_position = self.get_pos_in_array(i,j)
+               state_in_array_format[i][j] = self.state[0][state_array_position]
+       return state_in_array_format
 
 
 if __name__ == '__main__':
