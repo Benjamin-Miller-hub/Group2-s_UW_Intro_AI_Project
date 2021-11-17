@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>d224b6a8-b351-469d-a445-d4434cfdfd81</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>Environment for first agent.py</StartupFile>
+    <StartupFile>Environement for second agent.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
