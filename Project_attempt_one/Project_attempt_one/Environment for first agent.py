@@ -294,8 +294,8 @@ class ConnectFour(Env):
     def reset(self,player_one,player_two):
        self.state = np.zeros([1,42]) #mimicking the observation state
        self.count = 0
-       self.player_one = agent_player
-       self.player_two = other_player 
+       self.player_one = player_one
+       self.player_two = player_two 
 
        return self.state
     
