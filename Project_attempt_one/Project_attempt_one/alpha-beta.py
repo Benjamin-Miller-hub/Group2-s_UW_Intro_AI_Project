@@ -148,35 +148,71 @@ def get_utility(Player, Board):
             if (Board[i][j] == Player): 
                 for y in range(3): ## checks a grid around each player token
                      for x in range(3): ## will subtract one from the value to form the grid of -1 0 or +1 from the origin
-                         if((i+(y-1) >= 0 and i+(y-1) < 6) and (j+(x-1) >= 0 and j+(x-1) < 7 ) ): # makes sure the next location is on the board                         
-                            if (Board[i+(y-1)][j+(x-1)] == Player and ( y!=0 and x!=0) ): # checks to see if there is a player piece next to the current piece
-                                maxH = maxH +2 ## if so add 2 to hueristic
-                                if((i+2*(y-1-i) >= 0 and i+2*(y-1-i) < 6) and (i+2*(y-1-i) >= 0 and i+2*(y-1-i) < 7 ) ):# makes sure the next location is on the board 
-                                    if (Board[i+2*(y-1-i)][j+2*(x-1-j)] == Player ):# if there was a piece adjacent to the starting piece, see if there is another one in the same direction
-                                        # this is done by multiplying the difference between (y|x-1) and (i|j) by 2 and adding the result (-1,0,1) to the starting piece's location (i,j) 
-                                        maxH = maxH + 4 #increment H by 4, making a 3 in row twice as good as a 2 in a row
-                                        if((i+3*(y-1-i) >= 0 and i+3*(y-1-i) < 6) and (i+3*(y-1-i) >= 0 and i+3*(y-1-i) < 7 ) ): # makes sure the next location is on the board
-                                            if (Board[i+3*(y-1-i)][j+3*(x-1-j)] == -Player ):# if the next location in a three in a row is blocked, we remove the H gain
-                                                maxH = maxH - 4
-                                    if (Board[i+2*(y-1-i)][j+2*(x-1-j)] == -Player ): # if the two in a row is blocked by they other player remove H gain
-                                        maxH = maxH - 2
+                        Row = 0 # holds how many have been found in one line away from origin
+                        total = 0 # total points for a given direction
+                        # we will remove all the points for a given direction if from the origin a four in a row is impossible (of the board or piece in the way)
+                        if((i+(y-1) >= 0 and i+(y-1) < 6) and (j+(x-1) >= 0 and j+(x-1) < 7 ) ): # makes sure the next location is on the board                         
+                            if ((Board[i+(y-1)][j+(x-1)] == Player and ( y!=0 and x!=0)) or Board[i+(y-1)][j+(x-1)] == 0 ): # checks to see if their is an opponent piece next to the origin piece
+                                if (Board[i+(y-1)][j+(x-1)] == Player and ( y!=0 and x!=0)):
+                                    Row = Row + 1
+                                    total = total + Row ## adds to heuristic since the player has a piece in line with the origin
+                                if((i+2*(y-1) >= 0 and i+2*(y-1) < 6) and (j+2*(x-1) >= 0 and j+2*(x-1) < 7 ) ):# makes sure the next location is on the board 
+                                    if (Board[i+2*(y-1)][j+2*(x-1)] == Player or Board[i+2*(y-1)][j+2*(x-1)] == 0  ):# check for non opponent pieces two away from origin
+                                        if (Board[i+2*(y-1)][j+2*(x-1)] == Player): # if their is a player piece
+                                            Row = Row + 1 
+                                            total = total + Row #add to H
+                                        if((i+3*(y-1) >= 0 and i+3*(y-1) < 6) and (j+3*(x-1) >= 0 and j+3*(x-1) < 7 ) ): # makes sure the next location is on the board
+                                            if (Board[i+3*(y-1)][j+3*(x-1)] == Player ):# if their is a piece 3 array for the origin with no pieces blocking it
+                                                Row = Row + 1
+                                                total = total + Row #add to H
+                                            elif (Board[i+3*(y-1)][j+3*(x-1)] == -Player ):# if the next location in a three in a row is blocked, we remove the H gain
+                                                total = 0
+                                        else:
+                                            total = 0 # cant make a 4 in a row in this direction
+                                    else : # found opponent piece reset score for that direction
+                                        total = 0
+                                else: # cant make a 4 in a row off the board
+                                    total = 0
+                            else: #not needed but makes it look nice
+                                total = 0        
+                        else: # not needed
+                             total = 0            
+                        maxH = maxH+total
 
+            ## H score for opponent                
             if (Board[i][j] == -Player): 
                 for y in range(3): ## checks a grid around each player token
                      for x in range(3): ## will subtract one from the value to form the grid of -1 0 or +1 from the origin
-                         if((i+(y-1) >= 0 and i+(y-1) < 6) and (j+(x-1) >= 0 and j+(x-1) < 7 ) ): # makes sure the next location is on the board                         
-                            if (Board[i+(y-1)][j+(x-1)] == -Player and ( y!=0 and x!=0) ): # checks to see if there is a player piece next to the current piece
-                                minH = minH + 2 ## if so add 2 to hueristic
-                                if((i+2*(y-1-i) >= 0 and i+2*(y-1-i) < 6) and (i+2*(y-1-i) >= 0 and i+2*(y-1-i) < 7 ) ):# makes sure the next location is on the board 
-                                    if (Board[i+2*(y-1-i)][j+2*(x-1-j)] == -Player ):# if there was a piece adjacent to the starting piece, see if there is another one in the same direction
-                                        # this is done by multiplying the difference between (y|x-1) and (i|j) by 2 and adding the result (-1,0,1) to the starting piece's location (i,j) 
-                                        minH = minH + 50 #increment H by 50, you opponent having an unblocked 3 in a row is really bad
-                                        #idk if this will have the intended effect however and i may be overthinking it, needs to be tested 
-                                        if((i+3*(y-1-i) >= 0 and i+3*(y-1-i) < 6) and (i+3*(y-1-i) >= 0 and i+3*(y-1-i) < 7 ) ): # makes sure the next location is on the board
-                                            if (Board[i+3*(y-1-i)][j+3*(x-1-j)] == Player ):# if the next location in a three in a row is blocked, we remove the H gain
-                                                minH = minH - 50
-                                    if (Board[i+2*(y-1-i)][j+2*(x-1-j)] == Player ): # if the two in a row is blocked by they other player remove H gain
-                                        minH = minH - 2                                
+                        Row = 0 # holds how many have been found in one line away from origin
+                        total = 0 # total points for a given direction
+                        # we will remove all the points for a given direction if from the origin a four in a row is impossible (of the board or piece in the way)
+                        if((i+(y-1) >= 0 and i+(y-1) < 6) and (j+(x-1) >= 0 and j+(x-1) < 7 ) ): # makes sure the next location is on the board                         
+                            if ((Board[i+(y-1)][j+(x-1)] == -Player and ( y!=0 and x!=0)) or Board[i+(y-1)][j+(x-1)] == 0 ): # checks to see if their is an opponent piece next to the origin piece
+                                if (Board[i+(y-1)][j+(x-1)] == -Player and ( y!=0 and x!=0)):
+                                    Row = Row + 1
+                                    total = total + Row ## adds to heuristic since the player has a piece in line with the origin
+                                if((i+2*(y-1) >= 0 and i+2*(y-1) < 6) and (j+2*(x-1) >= 0 and j+2*(x-1) < 7 ) ):# makes sure the next location is on the board 
+                                    if (Board[i+2*(y-1)][j+2*(x-1)] == -Player or Board[i+2*(y-1)][j+2*(x-1)] == 0  ):# check for non opponent pieces two away from origin
+                                        if (Board[i+2*(y-1)][j+2*(x-1)] == -Player): # if their is a player piece
+                                            Row = Row + 1 
+                                            total = total + Row #add to H
+                                        if((i+3*(y-1) >= 0 and i+3*(y-1) < 6) and (j+3*(x-1) >= 0 and j+3*(x-1) < 7 ) ): # makes sure the next location is on the board
+                                            if (Board[i+3*(y-1)][j+3*(x-1)] == -Player ):# if their is a piece 3 array for the origin with no pieces blocking it
+                                                Row = Row + 1
+                                                total = total + Row #add to H
+                                            elif (Board[i+3*(y-1)][j+3*(x-1)] == Player ):# if the next location in a three in a row is blocked, we remove the H gain
+                                                total = 0
+                                        else:
+                                            total = 0 # cant make a 4 in a row in this direction
+                                    else : # found opponent piece reset score for that direction
+                                        total = 0
+                                else: # cant make a 4 in a row off the board
+                                    total = 0
+                            else:
+                                total = 0        
+                        else:
+                             total = 0            
+                        minH = minH+total                              
                                                  
     return maxH - minH; 
 
