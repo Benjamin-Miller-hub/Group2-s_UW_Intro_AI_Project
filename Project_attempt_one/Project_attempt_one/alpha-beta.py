@@ -1,3 +1,10 @@
+import numpy as np
+import copy
+import random
+
+from numpy.core.numeric import Infinity
+
+
 
 def change_format_for_neuralNet(array_board_state):
     state_in_array_format = np.zeros((6,7))
@@ -69,7 +76,8 @@ def check_for_win(board_state,player):
     diag_fourteen = [[5,2],[4,3],[3,4],[2,5],[1,6]]
     diag_fifteen =[[5,3],[4,4],[3,5],[2,6]]
     diag_sixteen = [[5,4],[4,5],[3,6]]
-    diagonals = [diag_one,diag_two,diag_three,diag_four,diag_five,diag_six,diag_seven,diag_eight,diag_nine,diag_ten,diag_eleven,diag_twelve,diag_thirteen,diag_fourteen,diag_fifteen,diag_sixteen]
+    diagonals = [diag_one,diag_two,diag_three,diag_four,diag_five,diag_six,diag_seven,
+        diag_eight,diag_nine,diag_ten,diag_eleven,diag_twelve,diag_thirteen,diag_fourteen,diag_fifteen,diag_sixteen]
 
     for diag_section in diagonals:
         count = 0
@@ -85,27 +93,76 @@ def check_for_win(board_state,player):
             #if none of these return true, then a false will be returned
     return False
 
-def alpha_beta(board,current_player,max_player,min_player):
-    #board should be in 6x7 form
-    #valid moves are 0,1,2,3,4,5,6 which are the possible colomuns that a piece can be put int
-    for move in range(7):
-        #iterate through the different possible moves
-        is_legal_move = check_if_illegal_move(board,move)
-        if is_legal_move(board,move,current_player):
-            new_board = apply_move(board,move,current_player)
-            check_for_win(new_board,current_player)
-            if check_for_win == true:
-                if current_player == max_player:
-                    return #whatever score a max player should get
-                else: # its min player that won
-                    return # whatever score min player should get
-                #please finish the rest of the code
+def alpha_beta(Board,Player,max_player,min_player, MaxDepth):
+    if Player == min_player: #should try to minimize its score
+        value, move = min_player(Player, Board, -Infinity, Infinity, 0, MaxDepth)
+    else: #should try to maximize its score
+        value, move = max_player(Player, Board, -Infinity, Infinity, 0, MaxDepth)
+    return move
+
+def max_player(Player, Board, alpha, beta, depth, MaxDepth):
+    if depth == MaxDepth:
+        utility = get_utility(Player, Board)
+        return utility, 0
+    term, utility = is_terminal(Player,Board)
+    if term:
+        return utility, 0
+    v = -Infinity
+    actions = get_legal_moves(Board)
+    random.shuffle(actions)
+    move = 0
+    for a in actions:
+        v2, a2 = min_player(-Player, apply_move(Board,a,Player), alpha, beta, depth+1, MaxDepth)
+        if v2 > v:
+            v, move = v2,a
+            alpha = max(alpha, v)
+        if v >= beta:
+            return v, move
+    return v,move
+
+def min_player(Player, Board, alpha, beta, depth, MaxDepth):
+    if depth == MaxDepth:
+        utility = get_utility(Player, Board)
+        return utility, 0
+    term, utility = is_terminal(Player,Board)
+    if term:
+        return utility, 0
+    v = -Infinity
+    actions = get_legal_moves(Board)
+    random.shuffle(actions)
+    move = 0
+    for a in actions:
+        v2, a2 = max_player(-Player, apply_move(Board,a,Player), alpha, beta, depth+1, MaxDepth)
+        if v2 < v:
+            v, move = v2, a
+            beta = min(beta, v)
+        if v <= alpha:
+            return v, move
+    return v,move
+
+def get_utility(Player, Board):
+    return 0
 
 def check_if_illegal_move(board,move):
-    if board[6][7] == 0:
+    if board[6][move] == 0:
         return True
     else:
         return False
+
+def get_legal_moves(board):
+    moves = []
+    for i in range(7):
+        if i < 6:
+            if check_if_illegal_move(board, i):
+                moves.append(i)
+
+def is_terminal(Player, Board):
+    if check_for_win(Player,Board):
+        return True, get_utility(Player,Board)
+    if check_for_win(-Player,Board):
+        return True, get_utility(-Player,Board)
+    else:
+        return False, 0
 
 def apply_move(board,move,player):
     #assumes only legal moves are passed in
