@@ -249,9 +249,9 @@ class ConnectFour(Env):
                 if current_col > -1 and current_col < 7 and current_row > -1 and current_row < 6:
                     position_in_array = self.get_pos_in_array(current_row,current_col)
                     if i == 0:
-                        if self.state[0][position_in_array] == 0:
+                        if self.state[0][position_in_array] == 0 or self.state[0][position_in_array] == player:
                             break
-                    if self.state[0][position_in_array] == opponent or self.state[0][position_in_array] == player:
+                    if self.state[0][position_in_array] == opponent:
                     #if self.state[current_row][current_col] == opponent:
                         in_a_diag+=1
                     elif self.state[0][position_in_array] == player:
