@@ -183,27 +183,6 @@ class ConnectFour(Env):
                 reward+= 5
 
 
-        #check diagonals
-      #  diag_one = [[3,0],[4,1],[5,2]]
-      #  diag_two = [[2,0],[3,1],[4,2],[5,3]]
-      #  diag_three = [[1,0],[2,1],[3,2],[4,3],[5,4]]
-      #  diag_four = [[0,0],[1,1],[2,2],[3,3],[4,4],[5,5]]
-      #  diag_five = [[0,1],[1,2],[2,3],[3,4],[4,5],[5,6]]
-      #  diag_six = [[0,2],[1,3],[2,4],[3,5],[4,6]]
-      #  diag_seven =[[0,3],[1,4],[2,5],[3,6]]
-      #  diag_eight = [[0,4],[1,5],[2,6]]
-
-
-       # diag_nine = [[2,0],[1,1],[0,2]]
-       # diag_ten = [[3,0],[2,1],[1,2],[0,3]]
-       # diag_eleven = [[4,0],[3,1],[2,2],[1,3],[0,4]]
-       # diag_twelve = [[5,0],[4,1],[3,2],[2,3],[1,4],[0,5]]
-       # diag_thirteen = [[5,1],[4,2],[3,3],[2,4],[1,5],[0,6]]
-       # diag_fourteen = [[5,2],[4,3],[3,4],[2,5],[1,6]]
-       # diag_fifteen =[[5,3],[4,4],[3,5],[2,6]]
-       # diag_sixteen = [[5,4],[4,5],[3,6]]
-       # diagonals = [diag_one,diag_two,diag_three,diag_four,diag_five,diag_six,diag_seven,diag_eight,diag_nine,diag_ten,diag_eleven,diag_twelve,diag_thirteen,diag_fourteen,diag_fifteen,diag_sixteen]
-
         groupings_of_columns_left_to_right = [[action-3,action-2,action-1,action],[action-2,action-1,action,action+1],[action-1,action,action+1,action+2],[action,action+1,action+2,action+3]]
         groupings_of_columns_right_to_left = [[action+3,action+2,action+1,action],[action+2,action+1,action,action-1],[action+1,action,action-1,action-2],[action,action-1,action-2,action-3]]
         groupings_of_row_down_to_up = [[row_inserted-3,row_inserted-2,row_inserted-1,row_inserted],[row_inserted-2,row_inserted-1,row_inserted,row_inserted+1],[row_inserted-1,row_inserted,row_inserted+1,row_inserted+2],[row_inserted,row_inserted+1,row_inserted+2,row_inserted+3]]
