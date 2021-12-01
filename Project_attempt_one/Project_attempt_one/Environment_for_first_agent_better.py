@@ -88,6 +88,42 @@ class ConnectFour(Env):
         info = {}
         return self.state,reward,done,info
 
+    def step_array(self,actions,player_piece):
+        #need to find what the new board is
+        #action determines where the chip was dropped left to right
+        #0 is far left
+        #7 is far right
+        
+        #action is the column number.
+        #need to find the row number
+        #scan through the column from the bottom up and place player coin in first empty spot
+        #player coin is just player
+        for x in actions:
+            action  = actions.index(max(actions))
+            actions[action] = -1000
+            row_inserted = 0
+            illegal_move = False
+            done = False
+            for i in range(7):
+                if i < 6:
+                    array_position = self.get_pos_in_array(i,action)
+                    if self.state[0][array_position] == 0:
+                        self.state[0][array_position] = player_piece #places the token where it would fall
+                        row_inserted = i
+                        break #break so that multiple coins do not fall at the same time
+                else:# this means that every position in this column is full, so return a negative reward since this is an illegal move
+                    reward = -1000
+                    done = True
+                    illegal_move = True
+            #need to give rewards. This is for agent 1, so need to scan through and see how the additional coin affected the state
+            #will just look at area around where the coin was added and see if that made it apart of a connect four (so if there are coins within four spots left, right,up,down, and diagonal
+            if illegal_move == False:
+                #check for win condition
+                reward,done = self.reward_function(row_inserted,action,player_piece)
+
+                info = {}
+                return self.state,reward,done,info
+
     def reward_function(self,row_inserted,action,player_piece):
         if player_piece == 1:
             opponent_piece = 2
@@ -261,13 +297,22 @@ class ConnectFour(Env):
     def render(self):
         pass
 
-    def reset(self,player_one,player_two):
-       self.state = np.zeros([1,42]) #mimicking the observation state
+    #reset(player_one,player_two,init_state)
+    # Resets the board to an inital state
+    # player_one: the value for player 1
+    # player_two: the value for player 2
+    # init_state: (optional) a state to start the board at. Default an empty board
+    def reset(self,player_one,player_two,init_state = np.zeros([1,42])):
+       self.state = init_state.reshape((1,42)) #mimicking the observation state
        self.count = 0
        self.player_one = player_one
        self.player_two = player_two 
 
        return self.state
+
+    def get_current_state(self):
+        to_return = np.copy(self.state[0])
+        return to_return
     
     def change_format_for_neuralNet(self):
        state_in_array_format = np.zeros((6,7))
