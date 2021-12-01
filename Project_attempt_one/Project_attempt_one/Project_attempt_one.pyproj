@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>d224b6a8-b351-469d-a445-d4434cfdfd81</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>Environement for second agent.py</StartupFile>
+    <StartupFile>Environment for third agent better.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -24,13 +24,13 @@
     <Compile Include="connect_kaggle.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Environment for first agent.py">
+    <Compile Include="Environment for first agent better.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Environement for second agent.py">
+    <Compile Include="Environement for second agent better.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Environment for third agent.py">
+    <Compile Include="Environment for third agent better.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="alpha-beta.py">
