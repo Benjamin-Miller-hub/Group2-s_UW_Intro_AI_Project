@@ -24,18 +24,21 @@
     <Compile Include="connect_kaggle.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Environement for second agent.py" />
     <Compile Include="Environment for first agent better.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Environement for second agent better.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Environment for first agent.py" />
     <Compile Include="Environment for third agent better.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="alpha-beta.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Environment for third agent.py" />
     <Compile Include="module1.py">
       <SubType>Code</SubType>
     </Compile>

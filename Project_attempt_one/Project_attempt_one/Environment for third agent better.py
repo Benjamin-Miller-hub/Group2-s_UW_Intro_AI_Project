@@ -20,6 +20,15 @@ red = -1
 def main():
     print("Hello")
     test = ConnectFour(1,2)
+    #the order for what to input in test step is: what action agent three decides
+                                                 #what action agent one decides
+                                                 #what action agent two decides
+                                                 #who turn player is
+                                                 #who is not turn player
+                                                 #so test.step(0,5,2,1,2) says that agent 3 elected for action 0, agent 1 elected for action 5, agent two elected for action 2,
+                                                 #the turn player is player 1 and the other player is player 2
+                                                 #similarily (1,2,0,2,1) says that agent 3 chose action 1, agent 1 chose action 2, agent 3 chose action 0, 
+                                                 #the turn player is player 2 and the other player is player 1
     state,reward,done,info = test.step(0,5,0,1,2)
     state,reward,done,info = test.step(0,6,1,1,2)
     state,reward,done,info = test.step(0,6,1,2,1)
