@@ -24,15 +24,14 @@ def main():
     #print(test.observation_space)
     state,reward,done,info = test.step(3,1,2)
     state,reward,done,info = test.step(3,1,2)
+    state,reward,done,info = test.step(3,1,2)
     #new_format = test.change_format_for_neuralNet()
     state,reward,done,info = test.step(3,1,2)
     state,reward,done,info = test.step(6,2,1)
     state,reward,done,info = test.step(3,1,2)
     state,reward,done,info = test.step(2,1,2)
     state,reward,done,info = test.step(3,1,2)
-    state,reward,done,info = test.step(3)
-    state,reward,done,info = test.step(6)
-    state,reward,done,info = test.step(3)
+
     print("Checking")
 
 class ConnectFour(Env):

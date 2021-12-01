@@ -33,7 +33,7 @@ def main():
 class ConnectFour(Env):
     def __init__(self,starting_player,agent_player,opponant_player):
         #will initialize the environment
-        self.action_space = Discrete(2) # seven columns that can be used(columns 0-6)
+        self.action_space = Discrete(2) # either choose agent one, or choose agent two
         #self.observation_space = MultiDiscrete([3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3])#the board space is 6x7
         self.observation_space = spaces.Tuple((spaces.Discrete(3),spaces.Discrete(3),spaces.Discrete(3),spaces.Discrete(3),spaces.Discrete(3),spaces.Discrete(3),spaces.Discrete(3),spaces.Discrete(3),spaces.Discrete(3),spaces.Discrete(3),spaces.Discrete(3),spaces.Discrete(3),spaces.Discrete(3),spaces.Discrete(3),spaces.Discrete(3),spaces.Discrete(3),spaces.Discrete(3),spaces.Discrete(3),spaces.Discrete(3),spaces.Discrete(3),spaces.Discrete(3),spaces.Discrete(3),spaces.Discrete(3),spaces.Discrete(3),spaces.Discrete(3),spaces.Discrete(3),spaces.Discrete(3),spaces.Discrete(3),spaces.Discrete(3),spaces.Discrete(3),spaces.Discrete(3),spaces.Discrete(3),spaces.Discrete(3),spaces.Discrete(3),spaces.Discrete(3),spaces.Discrete(3),spaces.Discrete(3),spaces.Discrete(3),spaces.Discrete(3),spaces.Discrete(3),spaces.Discrete(3),spaces.Discrete(3)))
         #the state should be the same as the observations_space
@@ -43,20 +43,19 @@ class ConnectFour(Env):
         #players are 1 and 2. Zero means empty
         self.player_one = player_one
         self.player_two = player_two
-        #self.turnplayer = starting_player
-        #player tokens should be -1 or 1. 0 means the space is onocuppied
-        #print("cows")
 
-    def step(self,action,agent_one_action,agent_two_action):
+    def step(self,action,agent_one_action,agent_two_action,player,opponent):
         #need to find what the new board is
-        #action determines where the chip was dropped left to right
+        #action decides whether to listen to agent one or to listed to agent two
+
         #0 is far left
         #7 is far right
         
-        #action is the column number.
         #need to find the row number
         #scan through the column from the bottom up and place player coin in first empty spot
         #player coin is just player
+
+        #find what agent to listen to
         if action == 0:
             action_to_take = agent_one_action
         else:
@@ -83,13 +82,6 @@ class ConnectFour(Env):
         info = {}
         self.state[0][actual_position] = player
         return self.state,reward,done,info
-
-
-        #change whose turn it is
-        if self.turnplayer == self.player:
-            self.turnplayer = self.opponant
-        else:
-            self.turnplayer = self.player
 
         info = {}
         return self.state,reward,done,info
@@ -135,7 +127,7 @@ class ConnectFour(Env):
 
     def check_for_rewards_prevent_win(self,row_inserted,action,player,opponent):
         reward = 0
-        #scores are based off opponant since all scores are relative to opponant positions
+        #scores are based off opponent since all scores are relative to opponent positions
         col_min = action-3
         col_max = action+3
 
@@ -567,9 +559,8 @@ class ConnectFour(Env):
     def reset(self,starting_player,other_player):
        self.state = np.zeros([6,7]) #mimicking the observation state
        self.count = 0
-       self.player = starting_player
-       self.opponant = other_player 
-       self.turnplayer = starting_player
+       self.player_one = starting_player
+       self.player_two = other_player
        return self.state
 
     def get_pos_in_array(self,row,col):
