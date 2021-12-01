@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>d224b6a8-b351-469d-a445-d4434cfdfd81</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>Environment for third agent better.py</StartupFile>
+    <StartupFile>Environment_for_third_agent_better.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -25,14 +25,14 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Environement for second agent.py" />
-    <Compile Include="Environment for first agent better.py">
+    <Compile Include="Environment_for_first_agent_better.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Environement for second agent better.py">
+    <Compile Include="Environement_for_second_agent_better.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Environment for first agent.py" />
-    <Compile Include="Environment for third agent better.py">
+    <Compile Include="Environment_for_third_agent_better.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="alpha-beta.py">
@@ -40,6 +40,9 @@
     </Compile>
     <Compile Include="Environment for third agent.py" />
     <Compile Include="module1.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="module2.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Project_attempt_one.py" />

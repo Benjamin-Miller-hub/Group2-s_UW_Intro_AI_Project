@@ -27,7 +27,6 @@ def main():
     state,reward,done,info = test.step(6,1)
     state,reward,done,info = test.step(3,2)
     state,reward,done,info = test.step(3,2)
-    state,reward,done,info = test.step(3)
     print("Checking")
 
 class ConnectFour(Env):
