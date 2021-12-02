@@ -776,6 +776,14 @@ class ConnectFour(Env):
                 reward = 1000
                 done = True
                 return reward, done
+#see if the board is full
+        for i in range(7):
+            position_in_array = self.get_pos_in_array(5,i)
+            if self.state[0][position_in_array] == 0:
+                break
+            if i == 6:
+                reward= 0
+                done = True
         return reward,done
     def render(self):
         pass
