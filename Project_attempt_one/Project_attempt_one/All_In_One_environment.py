@@ -56,6 +56,8 @@ def main():
     state,reward,done,info = test.step(3,1)
     state,reward,done,info = test.step(1,2)
     state,reward,done,info = test.step(3,1)
+    state = test.reset(3,np.array([1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0]))
+    state,reward,done,info = test.step(6,2)
     print("Checking")
 
 class ConnectFour(Env):
@@ -628,6 +630,7 @@ class ConnectFour(Env):
         else:
             opponent_piece = 1
 #return a negative reward if the move allows opponent to win
+        done_val = False
         for actions in range(7):
             for i in range(6):
                 if i < 6:
