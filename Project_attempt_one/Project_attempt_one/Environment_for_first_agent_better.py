@@ -10,7 +10,7 @@ from random import randint
 #to look at how to make an environment, view C:\Users\Benjamin Miller\anaconda3\Lib\site-packages\kaggle_environments core.py
 #then look at the make function
 #first agent
-
+import copy
 row = 6
 column = 7
 #gamma = 0.9#this is the discount
@@ -27,6 +27,15 @@ def main():
     state,reward,done,info = test.step(6,1)
     state,reward,done,info = test.step(3,2)
     state,reward,done,info = test.step(3,2)
+    state = test.reset(1,2)
+    state,reward,done,info = test.step(0,1)
+    state,reward,done,info = test.step(1,1)
+    state,reward,done,info = test.step(1,1)
+    state,reward,done,info = test.step(5,1)
+    state,reward,done,info = test.step(6,1)
+    state,reward,done,info = test.step(3,2)
+    state,reward,done,info = test.step(3,2)
+    state = test.reset(1,2)
     print("Checking")
 
 class ConnectFour(Env):
@@ -303,7 +312,7 @@ class ConnectFour(Env):
     # player_two: the value for player 2
     # init_state: (optional) a state to start the board at. Default an empty board
     def reset(self,player_one,player_two,init_state = np.zeros([1,42])):
-       self.state = init_state.reshape((1,42)) #mimicking the observation state
+       self.state = copy.deepcopy(init_state.reshape((1,42))) #mimicking the observation state
        self.count = 0
        self.player_one = player_one
        self.player_two = player_two 

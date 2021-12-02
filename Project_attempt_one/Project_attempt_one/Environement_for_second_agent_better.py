@@ -10,7 +10,7 @@ from random import randint
 #to look at how to make an environment, view C:\Users\Benjamin Miller\anaconda3\Lib\site-packages\kaggle_environments core.py
 #then look at the make function
 #first agent
-
+import copy
 row = 6
 column = 7
 #gamma = 0.9#this is the discount
@@ -22,12 +22,12 @@ def main():
     test = ConnectFour(1,2)
     #print(test.observation_space.sample())
     #print(test.observation_space)
-    state,reward,done,info = test.step(1,1,2)
-    state,reward,done,info = test.step(1,2,1)
-    state,reward,done,info = test.step(1,1,2)
-    state,reward,done,info = test.step(1,1,2)
+    state,reward,done,info = test.step(0,1,2)
+    state,reward,done,info = test.step(0,1,2)
+    state,reward,done,info = test.step(0,1,2)
+    state,reward,done,info = test.step(0,1,2)
     state,reward,done,info = test.step(0,2,1)
-    state,reward,done,info = test.step(4,2,1)
+    state,reward,done,info = test.step(0,2,1)
     state,reward,done,info = test.step(3,2,1)
     state,reward,done,info = test.step(1,2,1)
     state,reward,done,info = test.step(2,2,1)
@@ -147,6 +147,7 @@ class ConnectFour(Env):
                 return self.state,reward,done,info
 
     def reward_function(self,row_inserted,action,pos,player,opponent):
+        done_val = False
         reward = 0
         done = False
         #first do check if the move causes the agent to block pieces:
@@ -446,7 +447,7 @@ class ConnectFour(Env):
         pass
 
     def reset(self,player_one,player_two,init_state = np.zeros([1,42])):
-       self.state = init_state.reshape((1,42)) #mimicking the observation state
+       self.state = copy.deepcopy(init_state.reshape((1,42))) #mimicking the observation state
        self.count = 0
        self.player_one = agent_player
        self.player_two = other_player 

@@ -10,6 +10,7 @@ from random import randint
 #to look at how to make an environment, view C:\Users\Benjamin Miller\anaconda3\Lib\site-packages\kaggle_environments core.py
 #then look at the make function
 #first agent
+import copy
 
 row = 6
 column = 7
@@ -709,7 +710,7 @@ class ConnectFour(Env):
         pass
 
     def reset(self,player_one,player_two,init_state = np.zeros([1,42])):
-       self.state = init_state.reshape((1,42)) #mimicking the observation state
+       self.state = copy.deepcopy(init_state.reshape((1,42))) #mimicking the observation state
        self.count = 0
        self.player_one = starting_player
        self.player_two = other_player

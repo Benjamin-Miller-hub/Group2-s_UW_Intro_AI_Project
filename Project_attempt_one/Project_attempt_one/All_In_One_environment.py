@@ -9,6 +9,7 @@ from gym.spaces import MultiDiscrete
 from PIL import Image
 #from random import *
 from random import randint
+import copy
 
 row = 6
 column = 7
@@ -27,7 +28,34 @@ def main():
     state,reward,done,info = test.step(0,2)
     state,reward,done,info = test.step(0,2)
     state,reward,done,info = test.step(0,1)
+    state,reward,done,info = test.step(0,1)
     state = test.reset(2)
+    state,reward,done,info = test.step(0,1)
+    state,reward,done,info = test.step(0,1)
+    state = test.reset(2)
+    state,reward,done,info = test.step(0,1)
+    state,reward,done,info = test.step(0,2)
+    state,reward,done,info = test.step(0,2)
+    state,reward,done,info = test.step(0,1)
+    state,reward,done,info = test.step(0,1)
+    state,reward,done,info = test.step(3,1)
+    state,reward,done,info = test.step(3,1)
+    state,reward,done,info = test.step(2,2)
+    state,reward,done,info = test.step(2,2)
+    state,reward,done,info = test.step(4,2)
+    state,reward,done,info = test.step(4,2)
+    state = test.reset(3)
+    state,reward,done,info = test.step(0,1)
+    state,reward,done,info = test.step(1,1)
+    state,reward,done,info = test.step(1,1)
+    state,reward,done,info = test.step(2,2)
+    state,reward,done,info = test.step(2,1)
+    state,reward,done,info = test.step(2,1)
+    state,reward,done,info = test.step(3,2)
+    state,reward,done,info = test.step(3,1)
+    state,reward,done,info = test.step(3,1)
+    state,reward,done,info = test.step(1,2)
+    state,reward,done,info = test.step(3,1)
     print("Checking")
 
 class ConnectFour(Env):
@@ -44,6 +72,32 @@ class ConnectFour(Env):
             self.reward_to_use = 1
         else: #assume agent three
             self.reward_to_use = 2
+
+    def step_array(self,actions,player_piece):
+        for x in actions:
+            action  = actions.index(max(actions))
+            actions[action] = -1000
+            row_inserted = 0
+            illegal_move = False
+            done = False
+            for i in range(7):
+                if i < 6:
+                    array_position = self.get_pos_in_array(i,action)
+                    if self.state[0][array_position] == 0:
+                        self.state[0][array_position] = player_piece #places the token where it would fall
+                        actual_position = array_position
+                        row_inserted = i
+                        break #break so that multiple coins do not fall at the same time
+                else:# this means that every position in this column is full, so return a negative reward since this is an illegal move
+                    reward = -1000
+                    done = True
+                    illegal_move = True
+            if illegal_move == False:
+                #check for win condition
+                reward,done = self.reward_function(row_inserted,action,player_piece)
+                self.state[0][actual_position] = player_piece
+                info = {}
+                return self.state,reward,done,info
 
     def step(self,action,player_piece):
         #need to find what the new board is
@@ -273,11 +327,12 @@ class ConnectFour(Env):
             opponent = 1
         self.state[0][actual_position] = opponent
         reward = 0
+        done_val = False
         done = False
         #first do check if the move causes the agent to block pieces:
         reward_value = self.check_for_rewards_agent_two(row_inserted,action,player_piece,opponent)
         #now change the state to what it actually is:
-        self.state[0][pos] = player
+        self.state[0][actual_position] = player_piece
         #now try the seven different moves and see if the opponent can win, if they can, game is over and return a very negative reward
         for actions in range(7):
             for i in range(7):
@@ -294,7 +349,7 @@ class ConnectFour(Env):
                 return reward,done
             else:
                 reward = reward_value
-        self.state[0][actual_position] = player
+#see if the board is full
         for i in range(7):
             position_in_array = self.get_pos_in_array(5,i)
             if self.state[0][position_in_array] == 0:
@@ -578,8 +633,8 @@ class ConnectFour(Env):
                 if i < 6:
                     array_position = self.get_pos_in_array(i,actions)
                     if self.state[0][array_position] == 0:
-                        self.state[0][array_position] = opponent
-                        reward_val,done_val = self.win_check_agent_two(i,actions,player,opponent)
+                        self.state[0][array_position] = opponent_piece
+                        reward_val,done_val = self.win_check_agent_two(i,actions,player_piece,opponent_piece)
                         self.state[0][array_position] = 0
                         break #break so that multiple coins do not fall at the same time
             if done_val == True:
@@ -723,7 +778,7 @@ class ConnectFour(Env):
         pass
 
     def reset(self,agent,init_state = np.zeros([1,42])):
-       self.state = init_state.reshape((1,42)) #mimicking the observation state
+       self.state = copy.deepcopy(init_state.reshape((1,42))) #mimicking the observation state
        if agent == 1:
             self.reward_to_use = 0
        elif agent == 2:
