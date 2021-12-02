@@ -23,6 +23,8 @@ def main():
     #print(test.observation_space.sample())
     #print(test.observation_space)
     state,reward,done,info = test.step(1,1,2)
+    state,reward,done,info = test.step(1,2,1)
+    state,reward,done,info = test.step(1,1,2)
     state,reward,done,info = test.step(1,1,2)
     state,reward,done,info = test.step(0,2,1)
     state,reward,done,info = test.step(4,2,1)
@@ -62,7 +64,7 @@ class ConnectFour(Env):
            print("eh")
        return position
 
-    def step(self,action,player,opponent):
+    def step(self,action,player, opponent):
         #need to find what the new board is
         #action determines where the chip was dropped left to right
         #0 is far left
@@ -105,6 +107,44 @@ class ConnectFour(Env):
         #if none of these return True, then a False will be returned
         #no player has won and the board is not full, so continue the game
         return self.state,reward,done,info
+
+    def step_array(self,actions,player,opponent):
+        for x in actions:
+            action  = actions.index(max(actions))
+            actions[action] = -1000
+            row_inserted = 0
+            illegal_move = False
+            done = False
+            actual_position = 0
+            for i in range(7):
+                if i < 6:
+                    array_position = self.get_pos_in_array(i,action)
+                    if self.state[0][array_position] == 0:
+                        #self.state[0][array_position] = self.opponant #places the token where it would fall, as the opponant, this will allow us to reword points based off how much it blocks, this will need to be modified to be the player piece later
+                        row_inserted = i
+                        actual_position = array_position
+                        break #break so that multiple coins do not fall at the same time
+                else:# 
+                    reward = -1000
+                    done = True
+                    illegal_move = True
+            #need to give rewards. This is for agent 2, so need to scan through and see how the additional coin affected the state
+            #will just look at area around where the coin was added and see if that made it apart of a connect four (so if there are coins within four spots left, right,up,down, and diagonal
+            if illegal_move == False:
+                #check for win condition
+                reward,done = self.reward_function(row_inserted,action,actual_position,player,opponent)
+                info = {}
+                self.state[0][actual_position] = player
+                for i in range(7):
+                    position_in_array = self.get_pos_in_array(5,i)
+                    if self.state[0][position_in_array] == 0:
+                        break
+                    if i == 6:
+                        reward= 10000
+                        done = True
+                #if none of these return True, then a False will be returned
+                #no player has won and the board is not full, so continue the game
+                return self.state,reward,done,info
 
     def reward_function(self,row_inserted,action,pos,player,opponent):
         reward = 0
@@ -405,8 +445,8 @@ class ConnectFour(Env):
     def render(self):
         pass
 
-    def reset(self,agent_player,other_player):
-       self.state = np.zeros([1,42]) #mimicking the observation state
+    def reset(self,player_one,player_two,init_state = np.zeros([1,42])):
+       self.state = init_state.reshape((1,42)) #mimicking the observation state
        self.count = 0
        self.player_one = agent_player
        self.player_two = other_player 

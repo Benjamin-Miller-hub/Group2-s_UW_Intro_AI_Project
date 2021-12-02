@@ -83,8 +83,6 @@ class ConnectFour(Env):
         self.state[0][actual_position] = player
         return self.state,reward,done,info
 
-        info = {}
-        return self.state,reward,done,info
 
     def total_reward_function(self,row_inserted,action,actual_position,player,opponent):
         negative_reward,done_neg = self.reward_function_neg(row_inserted,action,actual_position,player,opponent)
