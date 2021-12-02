@@ -25,7 +25,7 @@ def main():
     state,reward,done,info = test.step(0,1)
     state,reward,done,info = test.step(0,1)
     state,reward,done,info = test.step(0,1)
-    state,reward,done,info = test.step(0,2)
+    state,reward,done,info = test.step(0,1)
     state,reward,done,info = test.step(0,2)
     state,reward,done,info = test.step(0,1)
     state,reward,done,info = test.step(0,1)
