@@ -1,4 +1,4 @@
-import Environment_for_first_agent_better as env1
+import All_In_One_environment as env1
 import numpy as np
 import heapq
 
@@ -15,36 +15,63 @@ class Node:
         self.numchildren = 0
     
     def FindLeaf(self, toadd = []):
+        toadd2 = []
+        toadd2 = toadd
         if self.numchildren < 7:
-            return self, toadd
+            toadd2.append(self)
+            return self, toadd2
         
         results = [0]*len(self.children)
-        for i,child in enumerate(self.children):
-            results[i] = (child.value/child.visits + (2**0.5)*(np.math.log(self.value)/child.visits)**0.5)*0.2 +  0.8*self.prediction[i]
-        return self.children[results.index(max(results))].FindLeaf(), toadd.append(self)
+        if toadd == []:
+            nu = np.random.dirichlet([0.8]*len(self.children))
+            results = nu+self.prediction
+            results = results.tolist()
+        else:
+            for i,child in enumerate(self.children):
+                results[i] = ((child.value)/child.visits + (2**0.5)*(np.math.log(self.visits)/child.visits)**0.5)*self.player + self.prediction[i]
+        
+        toadd2.append(self)
+        return self.children[results.index(max(results))].FindLeaf(toadd2)
     
 
 class MonteCarloTree:
 
-    def __init__(self, env, model, startingPlayer):
+    def __init__(self, env, model, startingPlayer,agent):
         self.currentState = env.get_current_state()
-        self.thisEnv = env1.ConnectFour(-1,1)
-        self.thisEnv.reset(-1,1,self.currentState)
+        self.thisEnv = env1.ConnectFour(agent)
+        self.thisEnv.reset(agent,self.currentState)
         self.model = model
+        self.agent = agent
         self.startingPlayer = startingPlayer
-        self.root = Node(model.predict(model.ReshapeToModel(self.currentState,self.startingPlayer)),self.currentState,startingPlayer, 1, 0)
+        self.root = Node(model.predict(model.ReshapeToModel(self.currentState,self.startingPlayer))[0],self.currentState,startingPlayer, 1, 0)
 
     def runSimulations(self, numSim):
         for simulation in range(numSim):
-            leaf,breadcrumb = self.root.FindLeaf()
-            toSim = heapq.nlargest(leaf.numchildren+1,leaf.prediction)[-1][-1]
-            toSim = np.argwhere(leaf.prediction == toSim)[0][1]
-            self.thisEnv.reset(-1,1,leaf.state)
-            newState,reward,done,info = self.thisEnv.step(toSim,leaf.player)
-            newNode = Node(self.model.predict(self.model.ReshapeToModel(self.currentState,leaf.player)),newState,leaf.player*-1,1,0)
+            leaf,breadcrumb = self.root.FindLeaf([])
+            toSim = heapq.nlargest(leaf.numchildren+1,leaf.prediction)[-1]
+            toSim = np.argwhere(leaf.prediction == toSim)
+            toSim = toSim[0][0]
+            while leaf.children[toSim] != 0:
+                toSim = (toSim+1)%7
+            self.thisEnv.reset(self.agent,leaf.state)
+            newState,val,done,info = self.thisEnv.step(toSim,leaf.player)
+            reward = self.simulate(leaf.player,3)
+            leaf.numchildren += 1
+            newNode = Node(self.model.predict(self.model.ReshapeToModel(newState,leaf.player))[0],newState,leaf.player*-1,1,reward)
             leaf.children[toSim] = newNode
             self.BackPropagate(breadcrumb,reward)
-        
+    
+    def simulate(self,player,simDepth = 10):
+        rewards = 0
+        for sim in range(simDepth):
+            state = self.thisEnv.get_current_state()
+            prediction = self.model.predict(self.model.ReshapeToModel(state,player))[0]
+            state, reward, done,info = self.thisEnv.step_array(prediction,player)
+            rewards += reward * player
+            if done:
+                break
+            player = player*-1
+        return rewards/simDepth
 
     def BackPropagate(self,toUpdate,value):
         for node in toUpdate:
@@ -57,7 +84,8 @@ class MonteCarloTree:
             if type(child) is int:
                 continue
             result.append( child.value/child.visits)
-        result = np.array(result)/sum(result)
+        result = [0.001 if x < 0 else x + 0.001 for x in result]
+        result = np.array(result)/(sum(result)+0.001)
         return result
             
 
@@ -67,12 +95,19 @@ class ReinforcementAgent:
         self.player = player
         self.memory = []
 
+    def SetPlayer(self,player):
+        self.player = player
+
     def GetAction(self,env):
-        MCT = MonteCarloTree(env,self.model,self.player)
-        MCT.runSimulations(50)
+        MCT = MonteCarloTree(env,self.model,self.player,1)
+        MCT.runSimulations(25)
         truth = MCT.GetAction()
-        prediction = self.model.predict(self.model.ReshapeToModel(env.get_current_state(),self.player))
-        self.memory.append((env.get_current_state,truth,prediction))
+        prediction = self.model.predict(self.model.ReshapeToModel(env.get_current_state(),self.player))[0]
+        print("truth")
+        print(truth)
+        print("prediction")
+        print(prediction)
+        self.memory.append((env.get_current_state(),truth,prediction,self.player))
         return prediction
 
     def GetMemory(self):

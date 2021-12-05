@@ -76,12 +76,14 @@ class ConnectFour(Env):
             self.reward_to_use = 2
 
     def step_array(self,actions,player_piece):
+        actions = np.array(actions)
         for x in actions:
-            action  = actions.index(max(actions))
+            action  = np.where(actions == np.max(actions))[0][0]
             actions[action] = -1000
             row_inserted = 0
             illegal_move = False
             done = False
+            actual_position = 0
             for i in range(7):
                 if i < 6:
                     array_position = self.get_pos_in_array(i,action)
@@ -89,17 +91,15 @@ class ConnectFour(Env):
                         self.state[0][array_position] = player_piece #places the token where it would fall
                         actual_position = array_position
                         row_inserted = i
-                        break #break so that multiple coins do not fall at the same time
-                else:# this means that every position in this column is full, so return a negative reward since this is an illegal move
-                    reward = -1000
-                    done = True
-                    illegal_move = True
-            if illegal_move == False:
-                #check for win condition
-                reward,done = self.reward_function(row_inserted,action,player_piece)
-                self.state[0][actual_position] = player_piece
-                info = {}
-                return self.state,reward,done,info
+                        reward,done = self.reward_function(row_inserted,action,player_piece)
+                        self.state[0][actual_position] = player_piece
+                        info = {}
+                        return self.state,reward,done,info
+            #check for win condition
+        reward,done = self.reward_function(row_inserted,action,player_piece)
+        self.state[0][actual_position] = player_piece
+        info = {}
+        return self.state,reward,done,info
 
     def step(self,action,player_piece):
         #need to find what the new board is
@@ -114,6 +114,7 @@ class ConnectFour(Env):
         row_inserted = 0
         illegal_move = False
         done = False
+        actual_position = 0
         for i in range(7):
             if i < 6:
                 array_position = self.get_pos_in_array(i,action)
@@ -798,6 +799,10 @@ class ConnectFour(Env):
             self.reward_to_use = 2
 
        return self.state
+
+    def get_current_state(self):
+        to_return = np.copy(self.state[0])
+        return to_return
 
     def get_pos_in_array(self,row,col):
        position = (row*7)+col

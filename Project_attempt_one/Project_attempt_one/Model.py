@@ -40,7 +40,7 @@ class CN4Model:
                 model = self.AddConvLayer(model)
             model = self.AddDenseOutput(model)
             model = Model(inputs=[InitialInput], outputs=[model])
-            model.compile(loss = {'Policy': "softmax_cross_entropy"}, optimizer=Adam(learning_rate=self.learningRate))
+            model.compile(loss = {'Policy': "categorical_crossentropy"}, optimizer=Adam(learning_rate=self.learningRate))
             self.model = model
     
     #The model should always view itself as player 1
@@ -57,3 +57,11 @@ class CN4Model:
     def predict(self,input):
         input = input.reshape((1,6,7,2))
         return self.model.predict(input)
+
+def ReshapeToModel(input, player):
+        inputarr = np.array(input).reshape(6,7)
+        arr = np.zeros((2,)+ (inputarr.shape))
+        arr[0][inputarr == (player)] = 1
+        arr[1][inputarr == (player*-1)] = 1
+        arr = np.transpose(arr,(1,2,0))
+        return arr
