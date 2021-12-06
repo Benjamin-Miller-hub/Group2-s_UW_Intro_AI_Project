@@ -51,6 +51,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Project_attempt_one.py" />
+    <Compile Include="Train.py" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Train.ipynb" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in
