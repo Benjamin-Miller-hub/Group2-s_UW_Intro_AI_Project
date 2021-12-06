@@ -39,11 +39,11 @@ importlib.reload(env)
 #Settings
 inputDim = (6,7,2)
 outputDim = (7)
-filterSize = 20
+filterSize = 15
 kernelDim = (4,4)
-convLayers = 4
+convLayers = 6
 regConst = 0.0001
-learningRate = 0.01
+learningRate = 0.001
 iteration = 1
 
 Memory = []
@@ -161,8 +161,8 @@ def main():
     testModel.InitModel()
     Agent1 = agent.ReinforcementAgent(testModel,-1)
     Agent2 = agent.ReinforcementAgent(testModel,1)
-    for i in range(100):
-        Mem = RunTwoAgents(Agent1, Agent2,1, Verbosity=2)
+    for i in range(40):
+        Mem = RunTwoAgents(Agent1, Agent2,10, Verbosity=2)
         TrainModel(Mem,testModel)
  
 
