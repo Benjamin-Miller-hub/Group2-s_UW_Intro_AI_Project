@@ -84,7 +84,8 @@ class MonteCarloTree:
             if type(child) is int:
                 continue
             result.append( child.value/child.visits)
-        result = [0.001 if x < 0 else x + 0.001 for x in result]
+        result = np.tanh(np.array(result))+1
+        result = (result/2).tolist()
         result = np.array(result)/(sum(result)+0.001)
         return result
             
@@ -103,10 +104,8 @@ class ReinforcementAgent:
         MCT.runSimulations(25)
         truth = MCT.GetAction()
         prediction = self.model.predict(self.model.ReshapeToModel(env.get_current_state(),self.player))[0]
-        print("truth")
-        print(truth)
-        print("prediction")
-        print(prediction)
+        print("delta")
+        print(truth + (prediction*-1))
         self.memory.append((env.get_current_state(),truth,prediction,self.player))
         return prediction
 

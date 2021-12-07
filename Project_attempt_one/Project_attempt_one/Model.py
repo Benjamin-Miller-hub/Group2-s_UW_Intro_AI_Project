@@ -19,14 +19,18 @@ class CN4Model:
         self.learningRate = learningRate
 
 
-    def AddConvLayer(self,layers):
-            newlayer = Conv2D( filters = self.filters, kernel_size = self.kernelDim, padding = 'same', use_bias=False, activation='linear', kernel_regularizer = regularizers.l2(self.regConst))(layers)
+    def AddConvLayer(self,layers, numFilters = -1):
+            kdim = (5,5)
+            if numFilters == -1:
+                numFilters = self.filters
+                kdim = self.kernelDim
+            newlayer = Conv2D( filters = numFilters, kernel_size = kdim, padding = 'same', use_bias=False, activation='relu', kernel_regularizer = regularizers.l2(self.regConst))(layers)
             newlayer = BatchNormalization(axis=1)(newlayer)
             newlayer = LeakyReLU()(newlayer)
             return newlayer
 
     def AddDenseOutput(self,layers):
-            newOutput = Conv2D( filters = 2, kernel_size = (1,1), padding = 'same', use_bias=False, activation='linear', kernel_regularizer = regularizers.l2(self.regConst))(layers)
+            newOutput = Conv2D( filters = 1, kernel_size = (1,1), padding = 'same', use_bias=False, activation='relu', kernel_regularizer = regularizers.l2(self.regConst))(layers)
             newOutput = BatchNormalization(axis=1)(newOutput)
             newOutput = LeakyReLU()(newOutput)
             newOutput = Flatten()(newOutput)
@@ -35,7 +39,7 @@ class CN4Model:
 
     def InitModel(self):
             InitialInput = Input(shape = self.inputSize, name = 'inital_Input')
-            model  = self.AddConvLayer(InitialInput)
+            model  = self.AddConvLayer(InitialInput,20)
             for x in range(self.convLayers):
                 model = self.AddConvLayer(model)
             model = self.AddDenseOutput(model)
