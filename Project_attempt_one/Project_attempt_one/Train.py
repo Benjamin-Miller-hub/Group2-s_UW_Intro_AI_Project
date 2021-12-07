@@ -41,10 +41,10 @@ inputDim = (6,7,2)
 outputDim = (7)
 filterSize = 15
 kernelDim = (4,4)
-convLayers = 6
+convLayers = 4
 regConst = 0.0001
 learningRate = 0.001
-iteration = 1
+iteration = 5
 
 Memory = []
 
@@ -161,7 +161,8 @@ def main():
     testModel.InitModel()
     Agent1 = agent.ReinforcementAgent(testModel,-1)
     Agent2 = agent.ReinforcementAgent(testModel,1)
-    for i in range(40):
+    for i in range(iteration):
+        print("New iteration \n")
         Mem = RunTwoAgents(Agent1, Agent2,10, Verbosity=2)
         TrainModel(Mem,testModel)
  
