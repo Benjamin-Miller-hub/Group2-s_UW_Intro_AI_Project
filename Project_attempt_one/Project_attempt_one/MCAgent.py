@@ -83,11 +83,11 @@ class MonteCarloTree:
         for child in self.root.children:
             if type(child) is int:
                 continue
-            result.append( child.value/child.visits)
+            result.append( child.value/child.visits*self.startingPlayer)
         np.array(result)
         result = np.tanh(result)
-        result = result + 2
-        result /2
+        result = result + 1
+        result = result/2
         result = result/(np.sum(result)+0.001)
         return result
             
