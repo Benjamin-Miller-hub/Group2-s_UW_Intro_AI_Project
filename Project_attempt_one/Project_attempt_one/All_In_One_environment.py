@@ -23,10 +23,10 @@ def main():
 
     test = ConnectFour(1)
     state,reward,done,info = test.step(0,1)
+    state,reward,done,info = test.step(0,3)
     state,reward,done,info = test.step(0,1)
     state,reward,done,info = test.step(0,1)
     state,reward,done,info = test.step(0,1)
-    state,reward,done,info = test.step(0,2)
     state,reward,done,info = test.step(0,1)
     state,reward,done,info = test.step(0,1)
     state = test.reset(2)
@@ -76,6 +76,7 @@ class ConnectFour(Env):
             self.reward_to_use = 2
 
     def step_array(self,actions,player_piece):
+        #scan the board and find the opponent
         actions = np.array(actions)
         for x in actions:
             action  = np.where(actions == np.max(actions))[0][0]
@@ -153,10 +154,11 @@ class ConnectFour(Env):
     def agent_one_reward(self,row_inserted,action,player_piece):
         array_position = self.get_pos_in_array(row_inserted,action)
         self.state[0][array_position] = player_piece
-        if player_piece == 1:
-            opponent_piece = 2
-        else:
-            opponent_piece = 1
+        #if player_piece == 1:
+         #   opponent_piece = 2
+        #else:
+        #    opponent_piece = 1
+        opponent_piece = self.find_opponent(player_piece)
         reward = 0
         done = False
         #check if four in a row
@@ -324,10 +326,7 @@ class ConnectFour(Env):
 
     def agent_two_reward(self,row_inserted,action,player_piece):
         actual_position = self.get_pos_in_array(row_inserted,action)
-        if player_piece == 1:
-            opponent = 2
-        else:
-            opponent = 1
+        opponent = self.find_opponent(player_piece)
         self.state[0][actual_position] = opponent
         reward = 0
         done_val = False
@@ -626,10 +625,7 @@ class ConnectFour(Env):
 
 
     def agent_three_reward(self,row_inserted,action,player_piece):
-        if player_piece == 1:
-            opponent_piece  = 2
-        else:
-            opponent_piece = 1
+        opponent = self.find_opponent(player_piece)
 #return a negative reward if the move allows opponent to win
         done_val = False
         for actions in range(7):
@@ -819,5 +815,15 @@ class ConnectFour(Env):
                 state_array_position = self.get_pos_in_array(i,j)
                 state_in_array_format[i][j] = self.state[0][state_array_position]
         return state_in_array_format
+
+    def find_opponent(self,player):
+        state = self.state[0]
+        for i in state:
+            if i != player and i!= 0:
+                return i
+        #if you don't find anything, then return a useless number
+        return 900
+
+
 if __name__ == '__main__':
     main()

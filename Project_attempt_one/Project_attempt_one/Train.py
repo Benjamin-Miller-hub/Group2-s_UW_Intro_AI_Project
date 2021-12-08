@@ -39,24 +39,40 @@ importlib.reload(env)
 #Settings
 inputDim = (6,7,2)
 outputDim = (7)
-filterSize = 15
+filterSize = 20
 kernelDim = (4,4)
 convLayers = 4
 regConst = 0.0001
 learningRate = 0.001
-iteration = 5
+iteration = 1
 
 Memory = []
-
-
-# In[218]:
-
-
+def make_random_move():
+    num = random.randint(0,6)
+    if num == 0:
+        return[0.96, 0.04, 0.0, 0.0, 0.0, 0.0, 0.0]
+    if num == 1:
+        return[0.0, 0.96, 0.04, 0.0, 0.0, 0.0, 0.0]
+    if num == 2:
+        return[0.0, 0.0, 0.96, 0.04, 0.0, 0.0, 0.0]
+    if num == 3:
+        return[0.0, 0.0, 0.0, 0.96, 0.04, 0.0, 0.0]
+    if num == 4:
+        return[0.0, 0.0, 0.0, 0.0, 0.96, 0.04, 0.0]
+    if num == 5:
+        return[0.0, 0.0, 0.0, 0.0, 0.0, 0.96, 0.04]
+    if num == 6:
+        return[0.04, 0.0, 0.0, 0.0, 0.0, 0.0, 0.96]
+#Verbosity controls how much information to output
+#0: None
+#1: Winner/Loser
+#2: Memory Output
 def RunTwoAgents(Agent1,Agent2, Games, Verbosity = 0):
     memories = []
     for game in range(Games):
         print("Playing game {} out of {}".format(game,Games))
         winner = PlayGame(Agent1,Agent2,Verbosity)
+        #winner = PlayGame_random_moves(Agent1,Agent2,Verbosity)
         memories += Agent1.GetMemory()
         memories += Agent2.GetMemory()
         Agent1.ClearMemory()
@@ -73,19 +89,19 @@ def RunTwoAgents(Agent1,Agent2, Games, Verbosity = 0):
 #1: Winner/Loser
 #2: Memory Output
 def PlayGame(Agent1,Agent2,Verbosity=0):
-    Agent1.SetPlayer(-1) # why are we setting the player here?
+    Agent1.SetPlayer(-1)
     Agent2.SetPlayer(1)
     done = False
     memories = []
-    newGame = env.ConnectFour(1)
+    newGame = env.ConnectFour(1) ##########################################################################################change this for different player
     num = random.randint(0,6)
-    newGame.step(num,1)#why is this called and nothing returns?
+    newGame.step(num,1)
     while not done:
         action = Agent1.GetAction(newGame)
         #Add some level of randomness so that we can get more varied cases
         nu = np.random.dirichlet([1]*7)/20
         action = action + nu
-        newState,reward,done,info = newGame.step_array(action,1)
+        newState,reward,done,info = newGame.step_array(action,Agent1.player)
         memories.append(action)
         if Verbosity > 1:
             print("Player -1 took the action\n{}".format(action))
@@ -97,7 +113,7 @@ def PlayGame(Agent1,Agent2,Verbosity=0):
         action = Agent2.GetAction(newGame)
         nu = np.random.dirichlet([1]*7)/20
         action = action + nu
-        newState,reward,done,info = newGame.step_array(action,-1)
+        newState,reward,done,info = newGame.step_array(action,Agent2.player)
         if Verbosity > 1:
             print("Player 1 took the action\n{}".format(action))
         if done:
@@ -109,16 +125,60 @@ def PlayGame(Agent1,Agent2,Verbosity=0):
     
     #Return game result
 
-def TrainModel(Memories, toFitAgent):
-    for i in range(10):
-        minbatch = random.sample(Memories,min(250,len(Memories)))
+#Verbosity controls how much information to output
+#0: None
+#1: Winner/Loser
+#2: Memory Output
+def PlayGame_random_moves(Agent1,Agent2,Verbosity=0):
+    Agent1.SetPlayer(-1)
+    Agent2.SetPlayer(1)
+    done1 = False
+    done2 = False
+    memories = []
+    newGame = env.ConnectFour(2) ##########################################################################################change this for different player
+    num = random.randint(0,6)
+    newGame.step(num,1)
+    while not done1 or not done2:
+        action = Agent1.GetAction(newGame)
+        #Add some level of randomness so that we can get more varied cases
+        #nu = np.random.dirichlet([1]*7)/20
+        #action = action + nu
+        action_random = make_random_move()
+        newState,reward,done1,info = newGame.step_array(action_random,Agent1.player)
+        #memories.append(action)
+#        if Verbosity > 1:
+ #           print("Player -1 took the action\n{}".format(action))
+        if done1:
+#            if Verbosity > 0:
+#                print("Player -1 has won the game!")
+            return -1
 
-        trainingStates = np.array([Con4.ReshapeToModel(item[0],item[3]) for item in Memories])
-        trainingTargets = np.array([item[1] for item in Memories])
+        action = Agent2.GetAction(newGame)
+        #nu = np.random.dirichlet([1]*7)/20
+        #action = action + nu
+        action_random = make_random_move()
+        newState,reward,done2,info = newGame.step_array(action_random,Agent2.player)
+#        if Verbosity > 1:
+#            print("Player 1 took the action\n{}".format(action))
+        if done2:
+#            if Verbosity > 0:
+#                print("Player 1 has won the game!")
+            return 1
+#        if Verbosity > 2:
+#            print(np.array(newGame.get_current_state()).reshape(6,7))
+    
+    #Return game result
+
+def TrainModel(Memories, toFitAgent):
+    for i in range(5):
+        minbatch = random.sample(Memories,min(500,len(Memories)))
+
+        trainingStates = np.array([Con4.ReshapeToModel(item[0],item[3]) for item in minbatch])
+        trainingTargets = np.array([item[1] for item in minbatch])
 
         fit = toFitAgent.model.fit(trainingStates,trainingTargets,epochs=5,verbose=1,validation_split=0,batch_size = 32)
 
-        toFitAgent.model.save("ModelCheckPointStart")
+        toFitAgent.model.save("C:/Users/Benjamin Miller/Documents/GitHub/Group2-s_UW_Intro_AI_Project/ModelCheckPointStart_agent_two")
     return round(fit.history["loss"][0],4)
 
 
@@ -161,9 +221,11 @@ def main():
     testModel.InitModel()
     Agent1 = agent.ReinforcementAgent(testModel,-1)
     Agent2 = agent.ReinforcementAgent(testModel,1)
-    for i in range(iteration):
+    #Mem = RunTwoAgents(Agent1, Agent2,5, Verbosity=0)
+    #TrainModel(Mem,testModel)
+    while True:
         print("New iteration \n")
-        Mem = RunTwoAgents(Agent1, Agent2,10, Verbosity=2)
+        Mem = RunTwoAgents(Agent1, Agent2,5, Verbosity=0)
         TrainModel(Mem,testModel)
  
 
