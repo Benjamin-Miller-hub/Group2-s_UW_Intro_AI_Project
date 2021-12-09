@@ -205,8 +205,13 @@ def apply_move(board,move,player):
 def draw(board):
     for i in range(6):
         for j in range(7):
-            print("|",board[i][j],end="") #simply draws the board
-        print("|",end="")
+            if board[i][j] == 1:
+                print(" |","X",end="")
+            if board[i][j] == -1:
+                print(" |","O",end="")
+            if board[i][j] == 0:
+                print(" |"," ",end="")           #simply draws the board
+        print(" |",end="")
         print("")
 
 if __name__ == '__main__': #idk if this will intefer with the other programs
@@ -222,7 +227,7 @@ if __name__ == '__main__': #idk if this will intefer with the other programs
 
         #player 1's move
         Move = alpha_beta(board,1,4)
-        print("1 move, position(", Move, ")")
+        print("X move, position(", Move, ")")
         board = apply_move(board,Move,1)               
         draw(board)
         util = get_utility(1,board)
@@ -235,12 +240,12 @@ if __name__ == '__main__': #idk if this will intefer with the other programs
             exit()
         
         #player 2's move
-        Move = alpha_beta(board,2,4)     
-        print("2 move, position(", Move, ")")       
-        board = apply_move(board,Move,2)         
+        Move = alpha_beta(board,-1,4)     
+        print("O move, position(", Move, ")")       
+        board = apply_move(board,Move,-1)         
         draw(board)
-        util = get_utility(2,board)
-        win,score = is_terminal(2,board)
+        util = get_utility(-1,board)
+        win,score = is_terminal(-1,board)
         print("position utility:",util,"won:",win)
         print("") 
         if win :
