@@ -24,6 +24,9 @@
     <Compile Include="connect_kaggle.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Custom_model.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Environement for second agent.py" />
     <Compile Include="Environment_for_first_agent_better.py">
       <SubType>Code</SubType>
@@ -40,6 +43,7 @@
     </Compile>
     <Compile Include="Environment for third agent.py" />
     <Compile Include="MCAgent.py" />
+    <Compile Include="MCAgent3.py" />
     <Compile Include="Model.py" />
     <Compile Include="module1.py">
       <SubType>Code</SubType>
@@ -51,6 +55,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="MCAgent_target_net.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MCAgentReturnBestMove.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="run_agents.py">

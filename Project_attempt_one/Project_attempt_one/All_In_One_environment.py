@@ -658,7 +658,7 @@ class ConnectFour(Env):
         return 0,False 
 
     def agent_three_reward(self,row_inserted,action,player_piece):
-        opponent = self.find_opponent(player_piece)
+        opponent_piece = self.find_opponent(player_piece)
 #return a negative reward if the move allows opponent to win
         done_val = False
         for actions in range(7):

@@ -32,7 +32,7 @@ class CN4Model:
             newlayer = LeakyReLU()(newlayer)
             return newlayer
 
-    def AddDenseOutput(self,layers):
+    def AddDenseOutput_custom(self,layers):
 #            newOutput = Conv2D( filters = 2, kernel_size = (1,1), padding = 'same', use_bias=True, activation='relu', kernel_regularizer = regularizers.l2(self.regConst))(layers)
 #            newOutput = BatchNormalization(axis=1)(newOutput)
 #            newOutput = LeakyReLU()(newOutput)
@@ -80,3 +80,4 @@ def ReshapeToModel(input, player):
         arr[1][inputarr == (player*-1)] = 1
         arr = np.transpose(arr,(1,2,0))
         return arr
+
