@@ -65,6 +65,16 @@ learningRate = 0.001
 iteration = 1
 
 
+#agent_three
+inputDim3 = (6,7,2)
+outputDim3 = (2)
+filterSize3 = 20
+kernelDim3 = (4,4)
+convLayers3 = 4
+regConst3 = 0.0001
+learningRate3 = 0.001
+iteration3 = 1
+
 
 Memory = []
 def make_random_move():
@@ -162,8 +172,8 @@ def PlayGame_random_moves(Agent1,Agent2,Verbosity=0):
     newGame = env.ConnectFour(3) ##########################################################################################change this for different player
 #    array_base_state = np.array([1,1,1,-1,0,0,0 ,1,1,1,-1,0,0,0, -1,0,1,0,0,0,0, 0,0,0,0,0,0,0, 0,0,0,0,0,0,0, 0,0,0,0,0,0,0,])
 #    newGame.reset(2,array_base_state)
-    num = random.randint(0,6)
-    newGame.step(num,1)
+#    num = random.randint(0,6)
+#    newGame.step(num,1)
     while not done1 or not done2:
         action = Agent1.GetAction(newGame)
         #Add some level of randomness so that we can get more varied cases
@@ -216,7 +226,7 @@ def TrainModel(Memories, toFitAgent):
 
         fit = toFitAgent.model.fit(trainingStates,trainingTargets,epochs=5,verbose=1,validation_split=0,batch_size = 32)
 
-    toFitAgent.model.save("C:/Users/Benjamin Miller/Documents/GitHub/Group2-s_UW_Intro_AI_Project/Agent_two_Complex_environment_redo_eight")
+    toFitAgent.model.save("C:/Users/Benjamin Miller/Documents/GitHub/Group2-s_UW_Intro_AI_Project/Agent_three")
     return round(fit.history["loss"][0],4)
 
 
@@ -463,13 +473,13 @@ def get_row(Board,action):
             return -999999, done
 
 def main():
-    testModel = Con4M.Agent3Model("C:/Users/Benjamin Miller/Documents/GitHub/Group2-s_UW_Intro_AI_Project/Project_attempt_one/Project_attempt_one/ModelCheckPointStartAgent1-2","C:/Users/Benjamin Miller/Documents/GitHub/Group2-s_UW_Intro_AI_Project/Agent_two_Complex_environment_redo_seven",inputDim,outputDim,filterSize,kernelDim,regConst,convLayers,learningRate)
-    #testModel = Con4.CN4Model(inputDim2,outputDim2,filterSize2,kernelDim2,regConst2,convLayers2,learningRate2)
+    testModel = Con4M.Agent3Model("C:/Users/Benjamin Miller/Documents/GitHub/Group2-s_UW_Intro_AI_Project/Project_attempt_one/Project_attempt_one/ModelCheckPointStartAgent1-2","C:/Users/Benjamin Miller/Documents/GitHub/Group2-s_UW_Intro_AI_Project/Agent_two_Complex_environment_redo_seven",inputDim3,outputDim3,filterSize3,kernelDim3,regConst3,convLayers3,learningRate3)
+#    testModel = Con4.CN4Model(inputDim2,outputDim2,filterSize2,kernelDim2,regConst2,convLayers2,learningRate2)
     testModel.InitModel()
     #testModel.model.get_weights()
    
-    #target_Model = Con4.CN4Model(inputDim,outputDim,filterSize,kernelDim,regConst,convLayers,learningRate)
-    #target_Model.InitModel()
+#    target_Model = Con4.CN4Model(inputDim,outputDim,filterSize,kernelDim,regConst,convLayers,learningRate)
+#    target_Model.InitModel()
     #target_Model.model.get_weights()
 #    oldModel = load_model("C:/Users/Benjamin Miller/Documents/GitHub/Group2-s_UW_Intro_AI_Project/Agent_two_Complex_environment_redo_seven")
 #    testModel.model.set_weights(oldModel.get_weights())

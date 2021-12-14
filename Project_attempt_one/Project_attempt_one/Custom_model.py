@@ -52,7 +52,7 @@ class CN4Model:
             model =self.AddConvLayer_custom(model,(4,4),32)
             model =self.AddConvLayer_custom(model,(3,3),64)
             model =self.AddConvLayer_custom(model,(2,2),64)
-            model = self.AddDenseOutput(model)
+            model = self.AddDenseOutput_custom(model)
             model = Model(inputs=[InitialInput], outputs=[model])
             #model.compile(loss = {'Policy': "categorical_crossentropy"}, optimizer=Adam(learning_rate=self.learningRate))
             model.compile(loss = {'Policy': "kl_divergence"}, optimizer=Adam(learning_rate=self.learningRate))

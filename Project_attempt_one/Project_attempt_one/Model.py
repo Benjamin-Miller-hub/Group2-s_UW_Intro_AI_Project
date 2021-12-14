@@ -34,6 +34,14 @@ class CN4Model:
             newOutput = Dense(self.outputSize, use_bias=False,activation='softmax',kernel_regularizer = regularizers.l2(self.regConst),name= 'Policy')(newOutput)
             return newOutput
 
+    def AddDenseOutputBinary(self,layers):
+            newOutput = Conv2D( filters = 2, kernel_size = (1,1), padding = 'same', use_bias=False, activation='relu', kernel_regularizer = regularizers.l2(self.regConst))(layers)
+            newOutput = BatchNormalization(axis=1)(newOutput)
+            newOutput = LeakyReLU()(newOutput)
+            newOutput = Flatten()(newOutput)
+            newOutput = Dense(self.outputSize, use_bias=False,activation='sigmoid',kernel_regularizer = regularizers.l2(self.regConst),name= 'Policy')(newOutput)
+            return newOutput
+
     def InitModel(self):
             InitialInput = Input(shape = self.inputSize, name = 'inital_Input')
             model  = self.AddConvLayer(InitialInput)
@@ -41,7 +49,8 @@ class CN4Model:
                 model = self.AddConvLayer(model)
             model = self.AddDenseOutput(model)
             model = Model(inputs=[InitialInput], outputs=[model])
-            model.compile(loss = {'Policy': "kl_divergence"}, optimizer=Adam(learning_rate=self.learningRate))
+            #model.compile(loss = {'Policy': "kl_divergence"}, optimizer=Adam(learning_rate=self.learningRate))
+            model.compile(loss = {'Policy': "binary_crossentropy"}, optimizer=Adam(learning_rate=self.learningRate))
             self.model = model
 
     def AddConvLayer_custom(self,layers,ker_dim,num_filters):
@@ -107,7 +116,7 @@ class Agent3Model(CN4Model):
         super().__init__(inputSize,outputSize,filters,kernelDim,regConst,convLayers,learningRate)
         self.model1 = CN4Model(inputSize,outputSize,filters,kernelDim,regConst,convLayers,learningRate)
         self.model2 = CN4Model(inputSize,outputSize,filters,kernelDim,regConst,convLayers,learningRate)
-#        self.model1.loadFromFile(Agent1Model)
+        self.model1.loadFromFile(Agent1Model)
         self.model2.loadFromFile(Agent2Model)
 
     def predict(self,input):
