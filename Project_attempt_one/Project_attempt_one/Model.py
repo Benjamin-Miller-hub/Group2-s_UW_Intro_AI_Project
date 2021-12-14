@@ -17,6 +17,7 @@ class CN4Model:
         self.regConst = regConst
         self.convLayers = convLayers
         self.learningRate = learningRate
+        self.model = Model()
 
 
     def AddConvLayer(self,layers):
@@ -40,9 +41,9 @@ class CN4Model:
                 model = self.AddConvLayer(model)
             model = self.AddDenseOutput(model)
             model = Model(inputs=[InitialInput], outputs=[model])
-            model.compile(loss = {'Policy': "categorical_crossentropy"}, optimizer=Adam(learning_rate=self.learningRate))
+            model.compile(loss = {'Policy': "kl_divergence"}, optimizer=Adam(learning_rate=self.learningRate))
             self.model = model
-    
+
     #The model should always view itself as player 1
     #input: The board state
     #player: The player to make a move
@@ -55,6 +56,37 @@ class CN4Model:
         return arr
                 
     def predict(self,input):
+        input = input.reshape((1,6,7,2))
+        return self.model.predict(input)
+
+    def loadFromFile(self, filename):
+        self.model = load_model(filename)
+
+class Agent3Model(CN4Model):
+    def __init__(self,Agent1Model,Agent2Model,inputSize,outputSize,filters,kernelDim,regConst,convLayers,learningRate):
+        super().__init__(inputSize,outputSize,filters,kernelDim,regConst,convLayers,learningRate)
+        self.model1 = CN4Model(inputSize,outputSize,filters,kernelDim,regConst,convLayers,learningRate)
+        self.model2 = CN4Model(inputSize,outputSize,filters,kernelDim,regConst,convLayers,learningRate)
+        self.model1.loadFromFile(Agent1Model)
+        self.model2.loadFromFile(Agent2Model)
+
+    def predict(self,input):
+        input2 = input.reshape((1,6,7,2))
+        results  = self.model.predict(input2)[0]
+        if results[0] > results[1]:
+            return self.model1.predict(input)
+        else:
+            return self.model2.predict(input)
+
+    def getModel1predict(self,input):
+        input = input.reshape((1,6,7,2))
+        return self.model1.predict
+
+    def getModel2predict(self,input):
+        input = input.reshape((1,6,7,2))
+        return self.model2.predict
+
+    def getModelPredict(self,input):
         input = input.reshape((1,6,7,2))
         return self.model.predict(input)
 
