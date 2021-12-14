@@ -50,6 +50,12 @@
     <Compile Include="All_In_One_environment.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="MCAgent_target_net.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="run_agents.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Project_attempt_one.py" />
     <Compile Include="Train.py" />
   </ItemGroup>
