@@ -129,11 +129,11 @@ class Agent3Model(CN4Model):
 
     def getModel1predict(self,input):
         input = input.reshape((1,6,7,2))
-        return self.model1.predict
+        return self.model1.predict(input)
 
     def getModel2predict(self,input):
         input = input.reshape((1,6,7,2))
-        return self.model2.predict
+        return self.model2.predict(input)
 
     def getModelPredict(self,input):
         input = input.reshape((1,6,7,2))

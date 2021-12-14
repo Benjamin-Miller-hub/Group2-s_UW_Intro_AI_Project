@@ -12,66 +12,53 @@ class Node3:
         self.visits = visits
         self.value = value
         self.state = state
-        self.children = [0,0,0,0,0,0,0] #this only had two even though our prediction had seven
+        self.children = [0,0]
         self.numchildren = 0
     
     def FindLeaf(self, toadd = []):
         toadd2 = []
         toadd2 = toadd
-        if self.numchildren < 7: #change to seven for seven possible states
+        if self.numchildren < 2:
             toadd2.append(self)
             return self, toadd2
         
         results = [0]*len(self.children)
         if toadd == []:
-            nu = np.random.dirichlet([0.8]*len(self.children)) 
+            nu = np.random.dirichlet([0.8]*len(self.children))
             results = nu+self.prediction
-#            results = self.prediction
             results = results.tolist()
         else:
             for i,child in enumerate(self.children):
                 results[i] = ((child.value)/child.visits + (2**0.5)*(np.math.log(self.visits)/child.visits)**0.5)*self.player + self.prediction[i]
         
         toadd2.append(self)
-        return self.children[results.index(max(results))].FindLeaf(toadd2) # so the issue is that the action returns 7 values, but there are only two children to go to
+        return self.children[results.index(max(results))].FindLeaf(toadd2)
     
 
 class MonteCarloTree3:
 
-    def __init__(self, env, model, startingPlayer,agent_to_use):
+    def __init__(self, env, model, startingPlayer):
         self.currentState = env.get_current_state()
         self.thisEnv = env1.ConnectFour(3)
         self.thisEnv.reset(3,self.currentState)
-        #make an action based off what agent_to_use
         self.model = model
         self.agent = 3
-        if agent_to_use == 1:
-            prediction = model.model1.predict(model.ReshapeToModel(self.currentState,startingPlayer))[0]
-        else:
-            prediction = model.model2.predict(model.ReshapeToModel(self.currentState,startingPlayer))[0]
         self.startingPlayer = startingPlayer
-        self.thisEnv.step_array(prediction,startingPlayer)
-            #step the array and make a prediction:
-        self.currentState = self.thisEnv.get_current_state()
-        self.root = Node3(model.predict(model.ReshapeToModel(self.currentState,self.startingPlayer))[0],self.currentState,startingPlayer, 1, 0) #issue is here. its using model.predict, but should instead use the action of wha
+        self.root = Node3(model.getModelPredict(model.ReshapeToModel(self.currentState,self.startingPlayer))[0],self.currentState,startingPlayer, 1, 0)
 
     def runSimulations(self, numSim):
-        #change the state to be whatever
         for simulation in range(numSim):
             leaf,breadcrumb = self.root.FindLeaf([])
             toSim = heapq.nlargest(leaf.numchildren+1,leaf.prediction)[-1]
             toSim = np.argwhere(leaf.prediction == toSim)
-            toSim = toSim[0][0]#added
-            #toSim = random.choice([0,1])
+            toSim = random.choice([0,1])
             while leaf.children[toSim] != 0:
-                #toSim = random.choice([0,1])
-                toSim = (toSim+1)%7#added
+                toSim = random.choice([0,1])
             self.thisEnv.reset(3,leaf.state)
-            #need to fix the step function
             newState,val,done,info = self.thisEnv.step(toSim,leaf.player)
-            reward = self.simulate(leaf.player,3)
+            reward = self.simulate(leaf.player,toSim +1, 3)
             leaf.numchildren += 1
-            newNode = Node3(self.model.predict(self.model.ReshapeToModel(newState,leaf.player))[0],newState,leaf.player*-1,1,reward)
+            newNode = Node3(self.model.getModelPredict(self.model.ReshapeToModel(newState,leaf.player))[0],newState,leaf.player*-1,1,reward)
             leaf.children[toSim] = newNode
             self.BackPropagate(breadcrumb,reward)
     
@@ -108,10 +95,10 @@ class MonteCarloTree3:
                 continue
             result.append( child.value/child.visits*self.startingPlayer)
         np.array(result)
-        #result = np.tanh(result)
-        #result = result + 1
-        #result = result/2
-        #result = result/(np.sum(result)+0.001)
+        result = np.tanh(result)
+        result = result + 1
+        result = result/2
+        result = result/(np.sum(result)+0.001)
         return result
             
 
@@ -125,22 +112,13 @@ class ReinforcementAgent3:
         self.player = player
 
     def GetAction(self,env):
-        MCT1 = MonteCarloTree3(env,self.model,self.player,1)
-        MCT1.runSimulations(15)
-        truth1 = MCT1.GetAction()
-
-        MCT2 = MonteCarloTree3(env,self.model,self.player,2)
-        MCT2.runSimulations(15)
-        truth2 = MCT2.GetAction()
-
+        MCT = MonteCarloTree3(env,self.model,self.player)
+        MCT.runSimulations(25)
+        truth = MCT.GetAction()
         prediction = self.model.getModelPredict(self.model.ReshapeToModel(env.get_current_state(),self.player))[0]
         print("delta")
-        if max(truth1) > max(truth2):
-            label_truth = [1, 0]
-        else:
-            label_truth = [0, 1]
-        print(abs(prediction) - np.abs(label_truth)) #code needs to be changed to return whatever has higher rewards. The model returns either action 1, or action 2. So find which initial action has higher rewards
-        self.memory.append((env.get_current_state(),label_truth,prediction,self.player))
+        print(abs(prediction) - np.abs(truth))
+        self.memory.append((env.get_current_state(),truth,prediction,self.player))
         return self.model.predict(self.model.ReshapeToModel(env.get_current_state(),self.player))[0]
 
     def GetMemory(self):
