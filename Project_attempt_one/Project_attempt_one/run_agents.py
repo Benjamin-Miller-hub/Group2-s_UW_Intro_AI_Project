@@ -67,7 +67,7 @@ def predict_act(model,input):
 
 def main():
     #model = load_model("C:/Users/Benjamin Miller/Documents/GitHub/Group2-s_UW_Intro_AI_Project/Agent_two_attempt_two_higher_rewards_more_training")
-    model = load_model("C:/Users/Benjamin Miller/Documents/GitHub/Group2-s_UW_Intro_AI_Project/Agent_two_Complex_environment_redo_seven")
+    model = load_model("C:/Users/Benjamin Miller/Documents/GitHub/Group2-s_UW_Intro_AI_Project/Project_attempt_one/Project_attempt_one/ModelCheckPointStartAgent1-new")
     board = np.zeros((6,7))
     draw(board)
     agent_player = 1
