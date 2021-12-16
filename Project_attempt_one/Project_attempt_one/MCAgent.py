@@ -102,7 +102,7 @@ class ReinforcementAgent:
         self.player = player
 
     def GetAction(self,env):
-        MCT = MonteCarloTree(env,self.model,self.player,1)
+        MCT = MonteCarloTree(env,self.model,self.player,2)
         MCT.runSimulations(25)
         truth = MCT.GetAction()
         prediction = self.model.predict(self.model.ReshapeToModel(env.get_current_state(),self.player))[0]

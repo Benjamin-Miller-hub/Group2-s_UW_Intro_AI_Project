@@ -169,7 +169,7 @@ def PlayGame_random_moves(Agent1,Agent2,Verbosity=0):
     done1 = False
     done2 = False
     memories = []
-    newGame = env.ConnectFour(3) ##########################################################################################change this for different player
+    newGame = env.ConnectFour(2) ##########################################################################################change this for different player
 #    array_base_state = np.array([1,1,1,-1,0,0,0 ,1,1,1,-1,0,0,0, -1,0,1,0,0,0,0, 0,0,0,0,0,0,0, 0,0,0,0,0,0,0, 0,0,0,0,0,0,0,])
 #    newGame.reset(2,array_base_state)
 #    num = random.randint(0,6)
@@ -181,12 +181,12 @@ def PlayGame_random_moves(Agent1,Agent2,Verbosity=0):
 #        action = action + nu
         action_random = make_random_move()
         epsilon_chance = np.random.random_integers(100)
-        if epsilon_chance < 10:
+        if epsilon_chance < 95:
             newState,reward,done1,info = newGame.step_array(action_random,Agent1.player)
         else:
-            action = try_to_make_four_in_a_row(newGame.get_current_state(),Agent1.player)
-            if action.max() == 0:
-                action = make_random_move()
+#            action = try_to_make_four_in_a_row(newGame.get_current_state(),Agent1.player)
+#            if action.max() == 0:
+            action = make_random_move()
             newState,reward,done1,info = newGame.step_array(action,Agent1.player)
         #memories.append(action)
 #        if Verbosity > 1:
@@ -473,15 +473,15 @@ def get_row(Board,action):
             return -999999, done
 
 def main():
-    testModel = Con4M.Agent3Model("C:/Users/Benjamin Miller/Documents/GitHub/Group2-s_UW_Intro_AI_Project/Project_attempt_one/Project_attempt_one/ModelCheckPointStartAgent1-2","C:/Users/Benjamin Miller/Documents/GitHub/Group2-s_UW_Intro_AI_Project/Agent_two_Complex_environment_redo_seven",inputDim3,outputDim3,filterSize3,kernelDim3,regConst3,convLayers3,learningRate3)
-#    testModel = Con4.CN4Model(inputDim2,outputDim2,filterSize2,kernelDim2,regConst2,convLayers2,learningRate2)
+    testModel = Con4M.Agent3Model("C:/Users/Benjamin Miller/Documents/GitHub/Group2-s_UW_Intro_AI_Project/Project_attempt_one/Project_attempt_one/ModelCheckPointStartAgent1-new","C:/Users/Benjamin Miller/Documents/GitHub/Group2-s_UW_Intro_AI_Project/Agent_two_Complex_environment_redo_ten",inputDim3,outputDim3,filterSize3,kernelDim3,regConst3,convLayers3,learningRate3)
+#    testModel = Con4.CN4Model(inputDim2,outputDim2,filterSize2,kernelDim2,regConst2,convLayers2,0.01)
     testModel.InitModel()
     #testModel.model.get_weights()
    
 #    target_Model = Con4.CN4Model(inputDim,outputDim,filterSize,kernelDim,regConst,convLayers,learningRate)
 #    target_Model.InitModel()
     #target_Model.model.get_weights()
-#    oldModel = load_model("C:/Users/Benjamin Miller/Documents/GitHub/Group2-s_UW_Intro_AI_Project/Agent_two_Complex_environment_redo_seven")
+    #oldModel = load_model("C:/Users/Benjamin Miller/Documents/GitHub/Group2-s_UW_Intro_AI_Project/Agent_two_Complex_environment_redo_seven")
 #    testModel.model.set_weights(oldModel.get_weights())
 #    Agent1 = agent.ReinforcementAgent(testModel,-1)
 #    Agent2 = agent.ReinforcementAgent(testModel,1)
@@ -504,7 +504,7 @@ def main():
     while True:
         print("New iteration \n")
 
-        Mem = RunTwoAgents(Agent1, Agent2,30, Verbosity=0)
+        Mem = RunTwoAgents(Agent1, Agent2,5, Verbosity=0)
         TrainModel(Mem,testModel)
 #        if iter_%10 == 0:
 #            Agent1.target_model.model.set_weights(Agent1.model.model.get_weights())
