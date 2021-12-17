@@ -49,8 +49,8 @@ class CN4Model:
                 model = self.AddConvLayer(model)
             model = self.AddDenseOutput(model)
             model = Model(inputs=[InitialInput], outputs=[model])
-            #model.compile(loss = {'Policy': "kl_divergence"}, optimizer=Adam(learning_rate=self.learningRate))
-            model.compile(loss = {'Policy': "binary_crossentropy"}, optimizer=Adam(learning_rate=self.learningRate))
+            model.compile(loss = {'Policy': "kl_divergence"}, optimizer=Adam(learning_rate=self.learningRate))
+            #model.compile(loss = {'Policy': "binary_crossentropy"}, optimizer=Adam(learning_rate=self.learningRate))
             self.model = model
 
     def AddConvLayer_custom(self,layers,ker_dim,num_filters):
