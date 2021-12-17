@@ -56,7 +56,7 @@ class MonteCarloTree3:
                 toSim = random.choice([0,1])
             self.thisEnv.reset(3,leaf.state)
             newState,val,done,info = self.thisEnv.step(toSim,leaf.player)
-            reward = self.simulate(leaf.player,toSim +1, 3)
+            reward = self.simulate(leaf.player,toSim +1, 10)
             leaf.numchildren += 1
             newNode = Node3(self.model.getModelPredict(self.model.ReshapeToModel(newState,leaf.player))[0],newState,leaf.player*-1,1,reward)
             leaf.children[toSim] = newNode
@@ -113,7 +113,7 @@ class ReinforcementAgent3:
 
     def GetAction(self,env):
         MCT = MonteCarloTree3(env,self.model,self.player)
-        MCT.runSimulations(25)
+        MCT.runSimulations(10)
         truth = MCT.GetAction()
         prediction = self.model.getModelPredict(self.model.ReshapeToModel(env.get_current_state(),self.player))[0]
         print("delta")
